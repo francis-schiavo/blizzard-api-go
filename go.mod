@@ -1,4 +1,4 @@
-module github.com/francis-schiavo/blizzard-api-go
+module blizzard_api_go
 
 go 1.13
 
