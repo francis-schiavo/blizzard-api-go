@@ -24,12 +24,13 @@ func (response ApiResponse) Parse(data interface{}) error {
 }
 
 type ApiClient struct {
-	httpClient         *http.Client
-	redisClient        *redis.Client
-	game			   Game
-	region             Region
-	token              string
-	validCacheStatus   []int
+	httpClient       *http.Client
+	redisClient      *redis.Client
+	game             Game
+	region           Region
+	token            string
+	validCacheStatus []int
+	Classic          bool
 }
 
 type Token struct {
@@ -82,7 +83,7 @@ func (client ApiClient) searchCache(key string) (bool, *ApiResponse) {
 					Status: status,
 					Cached: true,
 					Body:   []byte(data["d"]),
-					Error: nil,
+					Error:  nil,
 				}
 			}
 		}
@@ -114,9 +115,9 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	request, _ := http.NewRequest(http.MethodGet, fullUrl, nil)
 	request.Header.Set("Accept", "application/json")
 	if options.Token != "" {
-		request.Header.Set("Authorization", "Bearer " + options.Token)
+		request.Header.Set("Authorization", "Bearer "+options.Token)
 	} else {
-		request.Header.Set("Authorization", "Bearer " + client.token)
+		request.Header.Set("Authorization", "Bearer "+client.token)
 	}
 	response, err := client.httpClient.Do(request)
 	if err != nil {
@@ -152,7 +153,9 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 
 func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespace, uriPattern string, options *RequestOptions, args ...interface{}) *ApiResponse {
 	if options == nil {
-		options = &RequestOptions{}
+		options = &RequestOptions{
+			Classic: client.Classic,
+		}
 	}
 
 	fields := &url.Values{}

@@ -1,6 +1,7 @@
 package blizzard_api
 
 import (
+	"fmt"
 	"github.com/go-redis/redis"
 	"net/http"
 )
@@ -9,7 +10,7 @@ type WoWClient struct {
 	ApiClient
 }
 
-func NewWoWClient(region Region, redisClient *redis.Client, validCacheStatus []int) *WoWClient {
+func NewWoWClient(region Region, redisClient *redis.Client, validCacheStatus []int, classic bool) *WoWClient {
 	if validCacheStatus == nil {
 		validCacheStatus = []int{200, 404}
 	}
@@ -21,6 +22,7 @@ func NewWoWClient(region Region, redisClient *redis.Client, validCacheStatus []i
 			game:             "wow",
 			region:           region,
 			validCacheStatus: validCacheStatus,
+			Classic: classic,
 		},
 	}
 }
@@ -45,6 +47,12 @@ func (client *WoWClient) Achievement(id int, options *RequestOptions) *ApiRespon
 
 func (client *WoWClient) AchievementMedia(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/achievement/%d", options, id)
+}
+
+// Auction
+
+func (client *WoWClient) Auction(connectedRealmId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realms/%d/auctions", options, connectedRealmId)
 }
 
 // Azerite
@@ -101,6 +109,20 @@ func (client *WoWClient) CreatureFamilyMedia(id int, options *RequestOptions) *A
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/creature-family/%d", options, id)
 }
 
+// Guild Crest
+
+func (client *WoWClient) GuildCrestComponentsIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/guild-crest/index", options)
+}
+
+func (client *WoWClient) GuildCrestBorderMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/guild-crest/border/%d", options, id)
+}
+
+func (client *WoWClient) GuildCrestEmblemMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/guild-crest/emblem/%d", options, id)
+}
+
 // Item
 
 func (client *WoWClient) ItemClassIndex(options *RequestOptions) *ApiResponse {
@@ -131,6 +153,36 @@ func (client *WoWClient) ItemMedia(id int, options *RequestOptions) *ApiResponse
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/item/%d", options, id)
 }
 
+// Journal
+
+func (client *WoWClient) JournalExpansionIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-expansion/index", options)
+}
+
+func (client *WoWClient) JournalExpansion(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-expansion/%d", options, id)
+}
+
+func (client *WoWClient) JournalEncounterIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-encounter/index", options)
+}
+
+func (client *WoWClient) JournalEncounter(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-encounter/%d", options, id)
+}
+
+func (client *WoWClient) JournalInstanceIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-instance/index", options)
+}
+
+func (client *WoWClient) JournalInstance(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/journal-instance/%d", options, id)
+}
+
+func (client *WoWClient) JournalInstanceMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/journal-instance/%d", options, id)
+}
+
 // Mount
 
 func (client *WoWClient) MountIndex(options *RequestOptions) *ApiResponse {
@@ -139,6 +191,62 @@ func (client *WoWClient) MountIndex(options *RequestOptions) *ApiResponse {
 
 func (client *WoWClient) Mount(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(DATA, STATIC_NS,  "/mount/%d", options, id)
+}
+
+// Mythic Keystone Dungeon API
+
+func (client *WoWClient) MythicKeystoneDungeonIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/dungeon/index", options)
+}
+
+func (client *WoWClient) MythicKeystoneDungeon(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/dungeon/%d", options, id)
+}
+
+func (client *WoWClient) MythicKeystoneIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/index", options)
+}
+
+func (client *WoWClient) MythicKeystonePeriodIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/period/index", options)
+}
+
+func (client *WoWClient) MythicKeystonePeriod(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/period/%d", options, id)
+}
+
+func (client *WoWClient) MythicKeystoneSeasonIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/season/index", options)
+}
+
+func (client *WoWClient) MythicKeystoneSeason(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/mythic-keystone/season/%d", options, id)
+}
+
+// Mythic Keystone Leaderboards Index
+
+func (client *WoWClient) MythicKeystoneLeaderboardIndex(connectedRealmId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realm/%d/mythic-leaderboard/index", options, connectedRealmId)
+}
+
+func (client *WoWClient) MythicKeystoneLeaderboard(connectedRealmId int, dungeonId int, periodId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realm/%d/mythic-leaderboard/%d/period/%d", options, connectedRealmId, dungeonId, periodId)
+}
+
+// Mythic Raid Leaderboard API
+
+func (client *WoWClient) MythicRaidLeaderboard(raid string, faction string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/leaderboard/hall-of-fame/%s/%s", options, raid, faction)
+}
+
+// Pet
+
+func (client *WoWClient) PetIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/pet/index", options)
+}
+
+func (client *WoWClient) Pet(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/pet/%d", options, id)
 }
 
 // Playable Class
@@ -219,6 +327,42 @@ func (client *WoWClient) RecipeMedia(id int, options *RequestOptions) *ApiRespon
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/recipe/%d", options, id)
 }
 
+// PvP Season
+
+func (client *WoWClient) PvPSeasonIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/pvp-season/index", options)
+}
+
+func (client *WoWClient) PvPSeason(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/pvp-season/index/%d", options, id)
+}
+
+func (client *WoWClient) PvPLeaderBoardIndex(pvpSeasonId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/pvp-season/%d/pvp-leaderboard/index", options, pvpSeasonId)
+}
+
+func (client *WoWClient) PvPLeaderBoard(pvpSeasonId int, bracket string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/pvp-season/%d/pvp-leaderboard/%s", options, pvpSeasonId, bracket)
+}
+
+func (client *WoWClient) PvPRewardsIndex(pvpSeasonId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/pvp-season/%d/pvp-reward/index", options, pvpSeasonId)
+}
+
+// PvPTier
+
+func (client *WoWClient) PvPTierMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/pvp-tier/%d", options, id)
+}
+
+func (client *WoWClient) PvPTierIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/pvp-tier/index", options)
+}
+
+func (client *WoWClient) PvPTier(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/pvp-tier/%d", options, id)
+}
+
 // Quest
 
 func (client *WoWClient) QuestIndex(options *RequestOptions) *ApiResponse {
@@ -251,6 +395,26 @@ func (client *WoWClient) QuestTypeIndex(options *RequestOptions) *ApiResponse {
 
 func (client *WoWClient) QuestType(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(DATA, STATIC_NS,  "/quest/type/%d", options, id)
+}
+
+// Realm
+
+func (client *WoWClient) RealmIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/index", options)
+}
+
+func (client *WoWClient) Realm(realmSlugOrId string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/%s", options, realmSlugOrId)
+}
+
+// Region
+
+func (client *WoWClient) RegionIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/region/index", options)
+}
+
+func (client *WoWClient) Region(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/region/%s", options, id)
 }
 
 // Reputation
@@ -307,4 +471,138 @@ func (client *WoWClient) TitleIndex(options *RequestOptions) *ApiResponse {
 
 func (client *WoWClient) Title(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(DATA, STATIC_NS,  "/title/%d", options, id)
+}
+
+// WoW Token
+
+func (client *WoWClient) WoWTokenIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/token/index", options)
+}
+
+// Character Profile
+
+func (client *WoWClient) characterRequest(realmSlug string, characterSlug string, variation string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(PROFILE, PROFILE_NS, fmt.Sprintf("/character/%s/%s%s", realmSlug, characterSlug, variation), options)
+}
+
+func (client *WoWClient) CharacterAchievements(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/achievements", options)
+}
+
+func (client *WoWClient) CharacterAchievementsStatistics(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/achievements/statistics", options)
+}
+
+func (client *WoWClient) CharacterAppearance(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/appearance", options)
+}
+
+func (client *WoWClient) CharacterCollections(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/collections", options)
+}
+
+func (client *WoWClient) CharacterMounts(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/collections/mounts", options)
+}
+
+func (client *WoWClient) CharacterPets(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/collections/pets", options)
+}
+
+func (client *WoWClient) CharacterEncounters(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/encounters", options)
+}
+
+func (client *WoWClient) CharacterDungeons(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/encounters/dungeons", options)
+}
+
+func (client *WoWClient) CharacterRaids(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/encounters/raids", options)
+}
+
+func (client *WoWClient) CharacterEquipment(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/equipment", options)
+}
+
+func (client *WoWClient) CharacterHunterPets(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/hunter-pets", options)
+}
+
+func (client *WoWClient) CharacterMedia(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/character-media", options)
+}
+
+func (client *WoWClient) CharacterMythicKeystoneProfile(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/mythic-keystone-profile", options)
+}
+
+func (client *WoWClient) CharacterMythicKeystoneSeasonDetails(realmSlug string, characterSlug string, seasonId int, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, fmt.Sprintf("/mythic-keystone-profile/season/%d", seasonId), options)
+}
+
+func (client *WoWClient) CharacterProfession(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/professions", options)
+}
+
+func (client *WoWClient) CharacterProfile(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "", options)
+}
+
+func (client *WoWClient) CharacterStatus(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/status", options)
+}
+
+func (client *WoWClient) CharacterPvP(realmSlug string, characterSlug string, bracket string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, fmt.Sprintf("/pvp-bracket/%s", bracket), options)
+}
+
+func (client *WoWClient) CharacterPvPSummary(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/pvp-summary", options)
+}
+
+func (client *WoWClient) CharacterQuests(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/quests", options)
+}
+
+func (client *WoWClient) CharacterCompletedQuests(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/quests/completed", options)
+}
+
+func (client *WoWClient) CharacterReputations(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/reputations", options)
+}
+
+func (client *WoWClient) CharacterSpecializations(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/specializations", options)
+}
+
+func (client *WoWClient) CharacterCompletedStatistics(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/statistics", options)
+}
+
+func (client *WoWClient) CharacterTitles(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/titles", options)
+}
+
+// Guild Profile
+
+func (client *WoWClient) guildRequest(realmSlug string, guildSlug string, variation string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(PROFILE, PROFILE_NS, fmt.Sprintf("/character/%s/%s%s", realmSlug, guildSlug, variation), options)
+}
+
+func (client *WoWClient) GuildProfile(realmSlug string, guildSlug string, options *RequestOptions) *ApiResponse {
+	return client.guildRequest(realmSlug, guildSlug, "", options)
+}
+
+func (client *WoWClient) GuildActivity(realmSlug string, guildSlug string, options *RequestOptions) *ApiResponse {
+	return client.guildRequest(realmSlug, guildSlug, "/activity", options)
+}
+
+func (client *WoWClient) GuildAchievements(realmSlug string, guildSlug string, options *RequestOptions) *ApiResponse {
+	return client.guildRequest(realmSlug, guildSlug, "/achievements", options)
+}
+
+func (client *WoWClient) GuildRoster(realmSlug string, guildSlug string, options *RequestOptions) *ApiResponse {
+	return client.guildRequest(realmSlug, guildSlug, "/roster", options)
 }
