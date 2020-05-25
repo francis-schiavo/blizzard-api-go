@@ -52,7 +52,7 @@ func (client *WoWClient) AchievementMedia(id int, options *RequestOptions) *ApiR
 // Auction
 
 func (client *WoWClient) Auction(connectedRealmId int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realms/%d/auctions", options, connectedRealmId)
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realm/%d/auctions", options, connectedRealmId)
 }
 
 // Azerite
