@@ -22,6 +22,7 @@ const (
 	DATA
 	MEDIA
 	OAUTH
+	SEARCH
 )
 
 type Game string

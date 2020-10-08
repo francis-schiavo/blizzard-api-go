@@ -56,6 +56,8 @@ func (client ApiClient) BaseURL(endpointType EndpointType, region Region) string
 		return fmt.Sprintf("https://%s.battle.net/oauth/token", region)
 	case MEDIA:
 		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s/media", region, client.game)
+	case SEARCH:
+		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s/search", region, client.game)
 	default:
 		return ""
 	}

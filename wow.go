@@ -153,6 +153,10 @@ func (client *WoWClient) ItemMedia(id int, options *RequestOptions) *ApiResponse
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/item/%d", options, id)
 }
 
+func (client *WoWClient) ItemSearch(options *RequestOptions, searchQuery string) *ApiResponse {
+	return client.ApiRequest(SEARCH, STATIC_NS, "/item", options, searchQuery)
+}
+
 // Journal
 
 func (client *WoWClient) JournalExpansionIndex(options *RequestOptions) *ApiResponse {
@@ -443,6 +447,10 @@ func (client *WoWClient) Spell(id int, options *RequestOptions) *ApiResponse {
 
 func (client *WoWClient) SpellMedia(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/spell/%d", options, id)
+}
+
+func (client *WoWClient) SpellSearch(options *RequestOptions, searchQuery string) *ApiResponse {
+	return client.ApiRequest(SEARCH, STATIC_NS, "/spell", options, searchQuery)
 }
 
 // Talent API
