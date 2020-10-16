@@ -407,8 +407,12 @@ func (client *WoWClient) RealmIndex(options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/index", options)
 }
 
-func (client *WoWClient) Realm(realmSlugOrId string, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/%s", options, realmSlugOrId)
+func (client *WoWClient) Realm(realmSlug string, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/%s", options, realmSlug)
+}
+
+func (client *WoWClient) RealmById(realmId int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/realm/%s", options, realmId)
 }
 
 // Region
