@@ -422,7 +422,7 @@ func (client *WoWClient) RegionIndex(options *RequestOptions) *ApiResponse {
 }
 
 func (client *WoWClient) Region(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/region/%s", options, id)
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/region/%d", options, id)
 }
 
 // Reputation
