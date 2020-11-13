@@ -600,7 +600,7 @@ func (client *WoWClient) CharacterTitles(realmSlug string, characterSlug string,
 // Guild Profile
 
 func (client *WoWClient) guildRequest(realmSlug string, guildSlug string, variation string, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(PROFILE, PROFILE_NS, fmt.Sprintf("/guild/%s/%s%s", realmSlug, guildSlug, variation), options)
+	return client.ApiRequest(DATA, PROFILE_NS, fmt.Sprintf("/guild/%s/%s%s", realmSlug, guildSlug, variation), options)
 }
 
 func (client *WoWClient) GuildProfile(realmSlug string, guildSlug string, options *RequestOptions) *ApiResponse {
