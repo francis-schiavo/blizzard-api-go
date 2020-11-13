@@ -49,7 +49,7 @@ func (client ApiClient) BaseURL(endpointType EndpointType, region Region) string
 	case COMMUNITY:
 		return fmt.Sprintf("https://%s.api.blizzard.com/%s", region, client.game)
 	case PROFILE:
-		return fmt.Sprintf("https://%s.api.blizzard.com/%s/profile", region, client.game)
+		return fmt.Sprintf("https://%s.api.blizzard.com/profile/%s", region, client.game)
 	case DATA:
 		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s", region, client.game)
 	case OAUTH:
