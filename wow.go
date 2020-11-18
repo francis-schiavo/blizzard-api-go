@@ -79,6 +79,36 @@ func (client *WoWClient) ConnectedRealm(id int, options *RequestOptions) *ApiRes
 	return client.ApiRequest(DATA, DYNAMIC_NS,  "/connected-realm/%d", options, id)
 }
 
+// Covenant
+
+func (client *WoWClient) CovenantIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/index", options, id)
+}
+
+func (client *WoWClient) Covenant(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/%d", options, id)
+}
+
+func (client *WoWClient) CovenantMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, DYNAMIC_NS,  "/covenant/%d", options, id)
+}
+
+func (client *WoWClient) SoulbindIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/index", options, id)
+}
+
+func (client *WoWClient) Soulbind(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/%d", options, id)
+}
+
+func (client *WoWClient) ConduitIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/index", options, id)
+}
+
+func (client *WoWClient) Conduit(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/%d", options, id)
+}
+
 // Creatures
 
 func (client *WoWClient) CreatureFamilyIndex(options *RequestOptions) *ApiResponse {
@@ -473,6 +503,28 @@ func (client *WoWClient) PvPTalentIndex(options *RequestOptions) *ApiResponse {
 
 func (client *WoWClient) PvPTalent(id int, options *RequestOptions) *ApiResponse {
 	return client.ApiRequest(DATA, STATIC_NS,  "/pvp-talent/%d", options, id)
+}
+
+// Tech Talent
+
+func (client *WoWClient) TechTalentTreeIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/tech-talent-tree/index", options)
+}
+
+func (client *WoWClient) TechTalentTree(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/tech-talent-tree/%d", options, id)
+}
+
+func (client *WoWClient) TechTalentIndex(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/tech-talent/index", options)
+}
+
+func (client *WoWClient) TechTalent(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(DATA, STATIC_NS,  "/tech-talent/%d", options, id)
+}
+
+func (client *WoWClient) TechTalentMedia(id int, options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/tech-talent/%d", options, id)
 }
 
 // Title
