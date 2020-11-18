@@ -82,7 +82,7 @@ func (client *WoWClient) ConnectedRealm(id int, options *RequestOptions) *ApiRes
 // Covenant
 
 func (client *WoWClient) CovenantIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/index", options, id)
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/index", options)
 }
 
 func (client *WoWClient) Covenant(id int, options *RequestOptions) *ApiResponse {
@@ -94,7 +94,7 @@ func (client *WoWClient) CovenantMedia(id int, options *RequestOptions) *ApiResp
 }
 
 func (client *WoWClient) SoulbindIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/index", options, id)
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/index", options)
 }
 
 func (client *WoWClient) Soulbind(id int, options *RequestOptions) *ApiResponse {
@@ -102,7 +102,7 @@ func (client *WoWClient) Soulbind(id int, options *RequestOptions) *ApiResponse 
 }
 
 func (client *WoWClient) ConduitIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/index", options, id)
+	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/index", options)
 }
 
 func (client *WoWClient) Conduit(id int, options *RequestOptions) *ApiResponse {
