@@ -82,31 +82,31 @@ func (client *WoWClient) ConnectedRealm(id int, options *RequestOptions) *ApiRes
 // Covenant
 
 func (client *WoWClient) CovenantIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/index", options)
+	return client.ApiRequest(DATA, STATIC_NS,  "/covenant/index", options)
 }
 
 func (client *WoWClient) Covenant(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/covenant/%d", options, id)
+	return client.ApiRequest(DATA, STATIC_NS,  "/covenant/%d", options, id)
 }
 
 func (client *WoWClient) CovenantMedia(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(MEDIA, DYNAMIC_NS,  "/covenant/%d", options, id)
+	return client.ApiRequest(MEDIA, STATIC_NS,  "/covenant/%d", options, id)
 }
 
 func (client *WoWClient) SoulbindIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/index", options)
+	return client.ApiRequest(DATA, STATIC_NS,  "/soulbind/index", options)
 }
 
 func (client *WoWClient) Soulbind(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/soulbind/%d", options, id)
+	return client.ApiRequest(DATA, STATIC_NS,  "/soulbind/%d", options, id)
 }
 
 func (client *WoWClient) ConduitIndex(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/index", options)
+	return client.ApiRequest(DATA, STATIC_NS,  "/conduit/index", options)
 }
 
 func (client *WoWClient) Conduit(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, DYNAMIC_NS,  "/conduit/%d", options, id)
+	return client.ApiRequest(DATA, STATIC_NS,  "/conduit/%d", options, id)
 }
 
 // Creatures
@@ -184,7 +184,7 @@ func (client *WoWClient) ItemMedia(id int, options *RequestOptions) *ApiResponse
 }
 
 func (client *WoWClient) ItemSearch(options *RequestOptions, searchQuery string) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/item", options, searchQuery)
+	return client.ApiRequest(SEARCH, STATIC_NS, "/item?%s", options, searchQuery)
 }
 
 // Journal
@@ -484,7 +484,7 @@ func (client *WoWClient) SpellMedia(id int, options *RequestOptions) *ApiRespons
 }
 
 func (client *WoWClient) SpellSearch(options *RequestOptions, searchQuery string) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/spell", options, searchQuery)
+	return client.ApiRequest(SEARCH, STATIC_NS, "/spell?%s", options, searchQuery)
 }
 
 // Talent API
@@ -635,6 +635,10 @@ func (client *WoWClient) CharacterCompletedQuests(realmSlug string, characterSlu
 
 func (client *WoWClient) CharacterReputations(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
 	return client.characterRequest(realmSlug, characterSlug, "/reputations", options)
+}
+
+func (client *WoWClient) CharacterSoulbinds(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
+	return client.characterRequest(realmSlug, characterSlug, "/soulbinds", options)
 }
 
 func (client *WoWClient) CharacterSpecializations(realmSlug string, characterSlug string, options *RequestOptions) *ApiResponse {
