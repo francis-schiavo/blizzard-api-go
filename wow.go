@@ -183,8 +183,8 @@ func (client *WoWClient) ItemMedia(id int, options *RequestOptions) *ApiResponse
 	return client.ApiRequest(MEDIA, STATIC_NS,  "/item/%d", options, id)
 }
 
-func (client *WoWClient) ItemSearch(options *RequestOptions, searchQuery string) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/item?%s", options, searchQuery)
+func (client *WoWClient) ItemSearch(options *RequestOptions) *ApiResponse {
+	return client.ApiRequest(SEARCH, STATIC_NS, "/item", options)
 }
 
 // Journal

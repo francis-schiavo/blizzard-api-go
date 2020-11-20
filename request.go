@@ -168,11 +168,9 @@ func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespac
 		fields.Add("locale", options.Locale.String())
 	}
 	completeUrl := client.BaseURL(endpointType, options.Region) + fmt.Sprintf(uriPattern, args...)
-	if endpointType == SEARCH {
-		searchOptions := strings.Split(args[0].(string), "&")
-		for _, option := range searchOptions {
-			keyValue := strings.Split(option, "=")
-			fields.Add(keyValue[0], keyValue[1])
+	if options.QueryString != nil {
+		for key, value := range options.QueryString {
+			fields.Add(key, value)
 		}
 	}
 	return client.Request(completeUrl, fields, options)

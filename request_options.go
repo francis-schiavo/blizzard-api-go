@@ -5,4 +5,5 @@ type RequestOptions struct {
 	Locale  Locale
 	Token   string
 	Classic bool
+	QueryString map[string]string
 }
