@@ -136,7 +136,7 @@ func (client *WoWClient) Creature(id int, options *RequestOptions) *ApiResponse 
 }
 
 func (client *WoWClient) CreatureSearch(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/creature/%d", options)
+	return client.ApiRequest(SEARCH, STATIC_NS, "/creature", options)
 }
 
 func (client *WoWClient) CreatureDisplayMedia(id int, options *RequestOptions) *ApiResponse {
@@ -210,7 +210,7 @@ func (client *WoWClient) JournalEncounter(id int, options *RequestOptions) *ApiR
 }
 
 func (client *WoWClient) JournalEncounterSearch(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/journal-encounter/%d", options)
+	return client.ApiRequest(SEARCH, STATIC_NS, "/journal-encounter", options)
 }
 
 func (client *WoWClient) JournalInstanceIndex(options *RequestOptions) *ApiResponse {
@@ -554,7 +554,7 @@ func (client *WoWClient) SpellMedia(id int, options *RequestOptions) *ApiRespons
 }
 
 func (client *WoWClient) SpellSearch(options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(SEARCH, STATIC_NS, "/spell?%s", options)
+	return client.ApiRequest(SEARCH, STATIC_NS, "/spell", options)
 }
 
 // Talent API
