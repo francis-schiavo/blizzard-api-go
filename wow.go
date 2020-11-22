@@ -98,7 +98,7 @@ func (client *WoWClient) SoulbindIndex(options *RequestOptions) *ApiResponse {
 }
 
 func (client *WoWClient) Soulbind(id int, options *RequestOptions) *ApiResponse {
-	return client.ApiRequest(DATA, STATIC_NS, "/covenant/soulbind%d", options, id)
+	return client.ApiRequest(DATA, STATIC_NS, "/covenant/soulbind/%d", options, id)
 }
 
 func (client *WoWClient) ConduitIndex(options *RequestOptions) *ApiResponse {
