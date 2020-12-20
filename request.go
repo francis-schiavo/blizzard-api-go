@@ -3,20 +3,25 @@ package blizzard_api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-redis/redis"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 )
 
+type BattleNetHeaders struct {
+	Namespace string `json:"namespace"`
+	Schema    string `json:"schema"`
+	Revision  string `json:"revision"`
+}
+
 type ApiResponse struct {
-	Status int
-	Cached bool
-	Body   []byte
-	Error  error
+	Status           int
+	BattleNetHeaders *BattleNetHeaders
+	Cached           bool
+	Body             []byte
+	Error            error
 }
 
 func (response ApiResponse) Parse(data interface{}) error {
@@ -25,7 +30,7 @@ func (response ApiResponse) Parse(data interface{}) error {
 
 type ApiClient struct {
 	httpClient       *http.Client
-	redisClient      *redis.Client
+	cacheProvider    CacheProvider
 	game             Game
 	region           Region
 	token            string
@@ -71,47 +76,15 @@ func (client ApiClient) Namespace(namespace Namespace, classic bool) string {
 	return fmt.Sprintf(namespace.String(), client.region.String())
 }
 
-func (client ApiClient) searchCache(key string) (bool, *ApiResponse) {
-	if client.redisClient == nil {
-		return false, nil
-	}
-
-	data, err := client.redisClient.HGetAll(key).Result()
-	if err == nil && len(data) > 0 {
-		status, _ := strconv.Atoi(data["s"])
-		for _, valid := range client.validCacheStatus {
-			if status == valid {
-				return true, &ApiResponse{
-					Status: status,
-					Cached: true,
-					Body:   []byte(data["d"]),
-					Error:  nil,
-				}
-			}
-		}
-	}
-	return false, nil
-}
-
-func (client ApiClient) saveCache(key string, status int, body []byte) {
-	if client.redisClient == nil {
-		return
-	}
-
-	cacheData := map[string]interface{}{
-		"d": body,
-		"s": strconv.Itoa(status),
-	}
-
-	client.redisClient.HMSet(key, cacheData)
-}
-
 func (client ApiClient) Request(url string, query *url.Values, options *RequestOptions) *ApiResponse {
 	fullUrl := fmt.Sprintf("%s?%s", url, query.Encode())
 
-	found, cachedResponse := client.searchCache(fullUrl)
-	if found {
-		return cachedResponse
+	if client.cacheProvider != nil {
+		found, cachedResponse := client.cacheProvider.LoadFromCache(fullUrl)
+		if found {
+			cachedResponse.Cached = true
+			return cachedResponse
+		}
 	}
 
 	request, _ := http.NewRequest(http.MethodGet, fullUrl, nil)
@@ -143,7 +116,22 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		}
 	}
 
-	client.saveCache(fullUrl, status, bodyData)
+	apiResponse := &ApiResponse{
+		Status: response.StatusCode,
+		BattleNetHeaders: &BattleNetHeaders{
+			Namespace: response.Header.Get("Battlenet-Namespace"),
+			Schema:    response.Header.Get("Battlenet-Schema"),
+			Revision:  response.Header.Get("Battlenet-Schema-Revision"),
+		},
+		Cached: false,
+		Body:   nil,
+		Error:  nil,
+	}
+
+	if client.cacheProvider != nil {
+		client.cacheProvider.SaveToCache(fullUrl, apiResponse)
+		return apiResponse
+	}
 
 	return &ApiResponse{
 		Status: status,

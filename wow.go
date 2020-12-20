@@ -2,7 +2,6 @@ package blizzard_api
 
 import (
 	"fmt"
-	"github.com/go-redis/redis"
 	"net/http"
 )
 
@@ -10,7 +9,7 @@ type WoWClient struct {
 	ApiClient
 }
 
-func NewWoWClient(region Region, redisClient *redis.Client, validCacheStatus []int, classic bool) *WoWClient {
+func NewWoWClient(region Region, cacheProvider *CacheProvider, validCacheStatus []int, classic bool) *WoWClient {
 	if validCacheStatus == nil {
 		validCacheStatus = []int{200, 404}
 	}
@@ -18,7 +17,7 @@ func NewWoWClient(region Region, redisClient *redis.Client, validCacheStatus []i
 	return &WoWClient{
 		ApiClient{
 			httpClient:       new(http.Client),
-			redisClient:      redisClient,
+			cacheProvider:    *cacheProvider,
 			game:             "wow",
 			region:           region,
 			validCacheStatus: validCacheStatus,
