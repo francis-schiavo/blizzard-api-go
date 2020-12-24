@@ -9,7 +9,7 @@ type WoWClient struct {
 	ApiClient
 }
 
-func NewWoWClient(region Region, cacheProvider *CacheProvider, validCacheStatus []int, classic bool) *WoWClient {
+func NewWoWClient(region Region, cacheProvider CacheProvider, validCacheStatus []int, classic bool) *WoWClient {
 	if validCacheStatus == nil {
 		validCacheStatus = []int{200, 404}
 	}
@@ -17,7 +17,7 @@ func NewWoWClient(region Region, cacheProvider *CacheProvider, validCacheStatus 
 	return &WoWClient{
 		ApiClient{
 			httpClient:       new(http.Client),
-			cacheProvider:    *cacheProvider,
+			cacheProvider:    cacheProvider,
 			game:             "wow",
 			region:           region,
 			validCacheStatus: validCacheStatus,
