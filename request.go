@@ -124,7 +124,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 			Revision:  response.Header.Get("Battlenet-Schema-Revision"),
 		},
 		Cached: false,
-		Body:   nil,
+		Body:   bodyData,
 		Error:  nil,
 	}
 
@@ -133,12 +133,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		return apiResponse
 	}
 
-	return &ApiResponse{
-		Status: status,
-		Cached: false,
-		Body:   bodyData,
-		Error:  nil,
-	}
+	return apiResponse
 }
 
 func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespace, uriPattern string, options *RequestOptions, args ...interface{}) *ApiResponse {
