@@ -34,7 +34,6 @@ type ApiClient struct {
 	game             Game
 	region           Region
 	token            string
-	validCacheStatus []int
 	Classic          bool
 }
 
@@ -128,7 +127,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		Error:  nil,
 	}
 
-	if client.cacheProvider != nil {
+	if client.cacheProvider != nil && apiResponse.Status == 200 {
 		client.cacheProvider.SaveToCache(fullUrl, apiResponse)
 		return apiResponse
 	}
