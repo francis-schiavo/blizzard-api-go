@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type BattleNetHeaders struct {
@@ -29,12 +30,15 @@ func (response ApiResponse) Parse(data interface{}) error {
 }
 
 type ApiClient struct {
-	httpClient       *http.Client
-	cacheProvider    CacheProvider
-	game             Game
-	region           Region
-	token            string
-	Classic          bool
+	httpClient    *http.Client
+	cacheProvider CacheProvider
+	game          Game
+	region        Region
+	token         string
+	Classic       bool
+
+	concurrencyLimiter chan bool
+	timeLimiter        <-chan time.Time
 }
 
 type Token struct {
@@ -93,7 +97,10 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	} else {
 		request.Header.Set("Authorization", "Bearer "+client.token)
 	}
+	client.concurrencyLimiter <- true
 	response, err := client.httpClient.Do(request)
+	<- client.concurrencyLimiter
+	<- client.timeLimiter
 	if err != nil {
 		return &ApiResponse{
 			Status: 0,
