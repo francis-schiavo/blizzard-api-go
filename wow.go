@@ -16,8 +16,6 @@ func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool, conc
 		log.Fatalf("Blizzard API doesn't allow more than 100req/s")
 	}
 
-	delay := float64(time.Second) / float64(concurrency)
-
 	return &WoWClient{
 		ApiClient{
 			httpClient:       new(http.Client),
@@ -26,8 +24,7 @@ func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool, conc
 			region:           region,
 			Classic:          classic,
 
-			concurrencyLimiter: make(chan bool, concurrency),
-			timeLimiter: time.Tick(time.Duration(delay)),
+			rateLimiter: NewRateLimiter(concurrency, time.Second),
 		},
 	}
 }
