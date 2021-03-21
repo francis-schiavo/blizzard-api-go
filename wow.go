@@ -2,14 +2,22 @@ package blizzard_api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 )
 
 type WoWClient struct {
 	ApiClient
 }
 
-func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool) *WoWClient {
+func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool, concurrency int) *WoWClient {
+	if concurrency > 100 {
+		log.Fatalf("Blizzard API doesn't allow more than 100req/s")
+	}
+
+	delay := float64(time.Second) / float64(concurrency)
+
 	return &WoWClient{
 		ApiClient{
 			httpClient:       new(http.Client),
@@ -17,6 +25,9 @@ func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool) *WoW
 			game:             "wow",
 			region:           region,
 			Classic:          classic,
+
+			concurrencyLimiter: make(chan bool, concurrency),
+			timeLimiter: time.Tick(time.Duration(delay)),
 		},
 	}
 }
