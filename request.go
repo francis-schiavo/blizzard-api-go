@@ -127,7 +127,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		Error:  nil,
 	}
 
-	if client.cacheProvider != nil && apiResponse.Status == 200 {
+	if client.cacheProvider != nil {
 		client.cacheProvider.SaveToCache(fullUrl, apiResponse)
 		return apiResponse
 	}
