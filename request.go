@@ -187,3 +187,7 @@ func (client *ApiClient) CreateAccessToken(clientID string, clientSecret string,
 	}
 	client.token = tokenData.AccessToken
 }
+
+func (client *ApiClient) SetAccessToken(token string) {
+	client.token = token
+}
