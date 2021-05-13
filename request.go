@@ -8,7 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
+
+const HttpTimeFormat = "Mon, 02 Jan 06 15:04:05 GMT"
 
 type BattleNetHeaders struct {
 	Namespace string `json:"namespace"`
@@ -19,6 +22,7 @@ type BattleNetHeaders struct {
 type ApiResponse struct {
 	Status           int
 	BattleNetHeaders *BattleNetHeaders
+	LastModified     *time.Time
 	Cached           bool
 	Body             []byte
 	Error            error
@@ -95,7 +99,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		request.Header.Set("Authorization", "Bearer "+client.token)
 	}
 	if options.Since != nil {
-		request.Header.Set("If-Modified-Since", options.Since.Format("Mon, 02 Jan 06 15:04:05 GMT"))
+		request.Header.Set("If-Modified-Since", options.Since.Format(HttpTimeFormat))
 	}
 	token := client.rateLimiter.Acquire()
 	response, err := client.httpClient.Do(request)
@@ -106,6 +110,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 			Status: 0,
 			Cached: false,
 			Body:   nil,
+			LastModified: nil,
 			Error:  err,
 		}
 	}
@@ -122,6 +127,8 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		}
 	}
 
+	lastModified, _ := time.Parse(HttpTimeFormat, response.Header.Get("Last-Modified"))
+
 	apiResponse := &ApiResponse{
 		Status: response.StatusCode,
 		BattleNetHeaders: &BattleNetHeaders{
@@ -129,6 +136,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 			Schema:    response.Header.Get("Battlenet-Schema"),
 			Revision:  response.Header.Get("Battlenet-Schema-Revision"),
 		},
+		LastModified: &lastModified,
 		Cached: false,
 		Body:   bodyData,
 		Error:  nil,
