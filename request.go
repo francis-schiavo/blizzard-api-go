@@ -94,6 +94,9 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	} else {
 		request.Header.Set("Authorization", "Bearer "+client.token)
 	}
+	if options.Since != nil {
+		request.Header.Set("If-Modified-Since", options.Since.Format("Mon, 02 Jan 06 15:04:05 GMT"))
+	}
 	token := client.rateLimiter.Acquire()
 	response, err := client.httpClient.Do(request)
 	client.rateLimiter.Release(token)
