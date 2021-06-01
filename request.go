@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const HttpTimeFormat = "Mon, 02 Jan 06 15:04:05 GMT"
+const HttpTimeFormat = "Mon, _2 Jan 2006 15:04:05 MST"
 
 type BattleNetHeaders struct {
 	Namespace string `json:"namespace"`
