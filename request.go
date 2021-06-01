@@ -1,8 +1,10 @@
 package blizzard_api
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -117,8 +119,16 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	}
 
 	status := response.StatusCode
+	var reader io.ReadCloser
+	switch response.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(response.Body)
+		defer reader.Close()
+	default:
+		reader = response.Body
+	}
 
-	bodyData, err := ioutil.ReadAll(response.Body)
+	bodyData, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return &ApiResponse{
 			Status: status,
