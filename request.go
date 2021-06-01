@@ -93,6 +93,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 
 	request, _ := http.NewRequest(http.MethodGet, fullUrl, nil)
 	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Accept-Encoding", "gzip")
 	if options.Token != "" {
 		request.Header.Set("Authorization", "Bearer "+options.Token)
 	} else {
