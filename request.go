@@ -2,6 +2,7 @@ package blizzard_api
 
 import (
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,9 +17,12 @@ import (
 const HttpTimeFormat = "Mon, _2 Jan 2006 15:04:05 MST"
 
 type BattleNetHeaders struct {
-	Namespace string `json:"namespace"`
-	Schema    string `json:"schema"`
-	Revision  string `json:"revision"`
+	Namespace          string `json:"namespace"`
+	Schema             string `json:"schema"`
+	Revision           string `json:"revision"`
+	XTraceID           string `json:"x-trace-traceid"`
+	XTraceSpanID       string `json:"x-trace-spanid"`
+	XTraceParentSpanID string `json:"x-trace-parentspanid"`
 }
 
 type ApiResponse struct {
@@ -93,7 +97,8 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		}
 	}
 
-	request, _ := http.NewRequest(http.MethodGet, fullUrl, nil)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+	request, _ := http.NewRequestWithContext(ctx, http.MethodGet, fullUrl, nil)
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Accept-Encoding", "gzip")
 	if options.Token != "" {
@@ -110,11 +115,11 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 
 	if err != nil {
 		return &ApiResponse{
-			Status: 0,
-			Cached: false,
-			Body:   nil,
+			Status:       0,
+			Cached:       false,
+			Body:         nil,
 			LastModified: nil,
-			Error:  err,
+			Error:        err,
 		}
 	}
 
@@ -146,11 +151,14 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 			Namespace: response.Header.Get("Battlenet-Namespace"),
 			Schema:    response.Header.Get("Battlenet-Schema"),
 			Revision:  response.Header.Get("Battlenet-Schema-Revision"),
+			XTraceID: response.Header.Get("x-trace-traceid"),
+			XTraceSpanID: response.Header.Get("x-trace-spanid"),
+			XTraceParentSpanID: response.Header.Get("x-trace-parentspanid"),
 		},
 		LastModified: &lastModified,
-		Cached: false,
-		Body:   bodyData,
-		Error:  nil,
+		Cached:       false,
+		Body:         bodyData,
+		Error:        nil,
 	}
 
 	if client.cacheProvider != nil {
