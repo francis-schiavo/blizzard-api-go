@@ -11,14 +11,18 @@ type WoWClient struct {
 	ApiClient
 }
 
-func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool, concurrency int) *WoWClient {
+func NewWoWClient(region Region, cacheProvider CacheProvider, classic bool, concurrency int, transport *http.Transport) *WoWClient {
 	if concurrency > 100 {
 		log.Fatalf("Blizzard API doesn't allow more than 100req/s")
 	}
 
+	if transport == nil {
+		transport = &http.Transport{}
+	}
+
 	return &WoWClient{
 		ApiClient{
-			httpClient:       new(http.Client),
+			httpClient:       &http.Client{Transport: transport},
 			cacheProvider:    cacheProvider,
 			game:             "wow",
 			region:           region,
