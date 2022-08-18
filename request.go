@@ -55,38 +55,38 @@ type Token struct {
 	Scope       string `json:"scope"`
 }
 
-func (client ApiClient) BaseURL(endpointType EndpointType, region Region) string {
+func (client *ApiClient) BaseURL(endpointType EndpointType, region Region) string {
 	if region == "" {
 		region = client.region
 	}
 
 	switch endpointType {
-	case COMMUNITY:
+	case Community:
 		return fmt.Sprintf("https://%s.api.blizzard.com/%s", region, client.game)
-	case PROFILE:
+	case Profile:
 		return fmt.Sprintf("https://%s.api.blizzard.com/profile/%s", region, client.game)
-	case DATA:
+	case Data:
 		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s", region, client.game)
-	case OAUTH:
+	case Oauth:
 		return fmt.Sprintf("https://%s.battle.net/oauth/token", region)
-	case MEDIA:
+	case Media:
 		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s/media", region, client.game)
-	case SEARCH:
+	case Search:
 		return fmt.Sprintf("https://%s.api.blizzard.com/data/%s/search", region, client.game)
 	default:
 		return ""
 	}
 }
 
-func (client ApiClient) Namespace(namespace Namespace, classic bool) string {
-	if classic && namespace == STATIC_NS {
-		namespace = CLASSIC_NS
+func (client *ApiClient) Namespace(namespace Namespace, classic bool) string {
+	if classic && namespace == StaticNs {
+		namespace = ClassicNs
 	}
 
 	return fmt.Sprintf(namespace.String(), client.region.String())
 }
 
-func (client ApiClient) Request(url string, query *url.Values, options *RequestOptions) *ApiResponse {
+func (client *ApiClient) Request(url string, query *url.Values, options *RequestOptions) *ApiResponse {
 	fullUrl := fmt.Sprintf("%s?%s", url, query.Encode())
 
 	if client.cacheProvider != nil {
@@ -97,7 +97,8 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 		}
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
 	request, _ := http.NewRequestWithContext(ctx, http.MethodGet, fullUrl, nil)
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Accept-Encoding", "gzip")
@@ -128,7 +129,13 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	switch response.Header.Get("Content-Encoding") {
 	case "gzip":
 		reader, err = gzip.NewReader(response.Body)
-		defer reader.Close()
+		if err != nil {
+			log.Fatal("Failed to decompress response body.")
+		}
+		err = reader.Close()
+		if err != nil {
+			log.Fatal("Failed to close file.")
+		}
 	default:
 		reader = response.Body
 	}
@@ -148,11 +155,11 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	apiResponse := &ApiResponse{
 		Status: response.StatusCode,
 		BattleNetHeaders: &BattleNetHeaders{
-			Namespace: response.Header.Get("Battlenet-Namespace"),
-			Schema:    response.Header.Get("Battlenet-Schema"),
-			Revision:  response.Header.Get("Battlenet-Schema-Revision"),
-			XTraceID: response.Header.Get("x-trace-traceid"),
-			XTraceSpanID: response.Header.Get("x-trace-spanid"),
+			Namespace:          response.Header.Get("Battlenet-Namespace"),
+			Schema:             response.Header.Get("Battlenet-Schema"),
+			Revision:           response.Header.Get("Battlenet-Schema-Revision"),
+			XTraceID:           response.Header.Get("x-trace-traceid"),
+			XTraceSpanID:       response.Header.Get("x-trace-spanid"),
 			XTraceParentSpanID: response.Header.Get("x-trace-parentspanid"),
 		},
 		LastModified: &lastModified,
@@ -169,7 +176,7 @@ func (client ApiClient) Request(url string, query *url.Values, options *RequestO
 	return apiResponse
 }
 
-func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespace, uriPattern string, options *RequestOptions, args ...interface{}) *ApiResponse {
+func (client *ApiClient) ApiRequest(endpointType EndpointType, namespace Namespace, uriPattern string, options *RequestOptions, args ...interface{}) *ApiResponse {
 	if options == nil {
 		options = &RequestOptions{
 			Classic: client.Classic,
@@ -177,7 +184,7 @@ func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespac
 	}
 
 	fields := &url.Values{}
-	if namespace != NONE_NS {
+	if namespace != NoneNs {
 		fields.Add("namespace", client.Namespace(namespace, options.Classic))
 	}
 	if options.Locale != All {
@@ -193,7 +200,7 @@ func (client ApiClient) ApiRequest(endpointType EndpointType, namespace Namespac
 }
 
 func (client *ApiClient) CreateAccessToken(clientID string, clientSecret string, region Region) {
-	requestURL := client.BaseURL(OAUTH, region)
+	requestURL := client.BaseURL(Oauth, region)
 	body := strings.NewReader("grant_type=client_credentials")
 
 	request, err := http.NewRequest(http.MethodPost, requestURL, body)
@@ -207,7 +214,6 @@ func (client *ApiClient) CreateAccessToken(clientID string, clientSecret string,
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer response.Body.Close()
 	responseData, err := ioutil.ReadAll(response.Body)
 
 	var tokenData Token
@@ -216,6 +222,10 @@ func (client *ApiClient) CreateAccessToken(clientID string, clientSecret string,
 		log.Fatal(err)
 	}
 	client.token = tokenData.AccessToken
+	err = response.Body.Close()
+	if err != nil {
+		log.Fatal("Failed to release response body.")
+	}
 }
 
 func (client *ApiClient) SetAccessToken(token string) {

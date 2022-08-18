@@ -3,12 +3,13 @@ package blizzard_api
 type Namespace string
 
 const (
-	NONE_NS = Namespace("")
-	STATIC_NS = Namespace("static-%s")
-	CLASSIC_NS = Namespace("static-classic-%s")
-	DYNAMIC_NS = Namespace("dynamic-%s")
-	PROFILE_NS = Namespace("profile-%s")
+	NoneNs    = Namespace("")
+	StaticNs  = Namespace("static-%s")
+	ClassicNs = Namespace("static-classic-%s")
+	DynamicNs = Namespace("dynamic-%s")
+	ProfileNs = Namespace("profile-%s")
 )
+
 func (namespace Namespace) String() string {
 	return string(namespace)
 }
@@ -17,25 +18,27 @@ type EndpointType int8
 
 const (
 	_ EndpointType = iota
-	COMMUNITY
-	PROFILE
-	DATA
-	MEDIA
-	OAUTH
-	SEARCH
+	Community
+	Profile
+	Data
+	Media
+	Oauth
+	Search
 )
 
 type Game string
+
 const (
 	WoW = Game("wow")
-	D3 = Game("d3")
+	D3  = Game("d3")
 	SC2 = Game("sc2")
-	HS = Game("hs")
+	HS  = Game("hs")
 )
 
 type Locale string
+
 const (
-	All = Locale("")
+	All  = Locale("")
 	EnUS = Locale("en_US")
 	EsMX = Locale("es_MX")
 	PtBR = Locale("pt_BR")
@@ -56,12 +59,14 @@ func (locale Locale) String() string {
 }
 
 type Region string
+
 const (
 	US = Region("us")
 	EU = Region("eu")
 	KR = Region("kr")
 	TW = Region("tw")
 )
+
 func (region Region) String() string {
 	return string(region)
 }
