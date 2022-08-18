@@ -40,6 +40,7 @@ func (response ApiResponse) Parse(data interface{}) error {
 
 type ApiClient struct {
 	httpClient    *http.Client
+	timeout       time.Duration
 	cacheProvider CacheProvider
 	game          Game
 	region        Region
@@ -97,7 +98,7 @@ func (client *ApiClient) Request(url string, query *url.Values, options *Request
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), client.timeout)
 	defer cancel()
 	request, _ := http.NewRequestWithContext(ctx, http.MethodGet, fullUrl, nil)
 	request.Header.Set("Accept", "application/json")
