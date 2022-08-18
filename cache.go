@@ -7,11 +7,15 @@ import (
 
 type CacheProvider interface {
 	SaveToCache(identifier string, apiResponse *ApiResponse)
-    LoadFromCache(identifier string) (bool, *ApiResponse)
+	LoadFromCache(identifier string) (bool, *ApiResponse)
 }
 
 type RedisCache struct {
 	client *redis.Client
+}
+
+func NewRedisCache(redisClient *redis.Client) *RedisCache {
+	return &RedisCache{client: redisClient}
 }
 
 func (cache *RedisCache) LoadFromCache(identifier string) (bool, *ApiResponse) {
@@ -29,7 +33,7 @@ func (cache *RedisCache) LoadFromCache(identifier string) (bool, *ApiResponse) {
 	return true, response
 }
 
-func (cache *RedisCache) SaveToCache(identifier string, apiResponse *ApiResponse)  {
+func (cache *RedisCache) SaveToCache(identifier string, apiResponse *ApiResponse) {
 	data, _ := json.Marshal(apiResponse)
 	cache.client.Set(identifier, data, 0)
 }
